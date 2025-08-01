@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Funny Flashcards</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background-color: #98fb98; /* Light green cozy background */
+    }
+    .card {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #3cb371; /* Medium green card */
+      padding: 1vh; /* Minimal padding to maximize text area */
+      border-radius: 2vh;
+      font-size: 18vw; /* Larger font size for maximum display */
+      line-height: 1.1; /* Tightened for larger text */
+      text-align: center;
+      width: 95vw; /* Nearly full screen width */
+      height: 60vh; /* Increased height for proportion */
+      box-sizing: border-box;
+      color: white;
+      border: 0.5vh solid #2e8b57; /* Darker green border for coziness */
+      box-shadow: 0 0 1vh rgba(0, 0, 0, 0.1); /* Soft shadow */
+      display: flex; /* Flexbox for centering text */
+      align-items: center;
+      justify-content: center;
+    }
+    #nextBtn {
+      position: absolute;
+      bottom: 5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 2vh 4vw;
+      font-size: 4vw;
+      border: none;
+      border-radius: 1vh;
+      background-color: #2e8b57; /* Dark green button */
+      color: white;
+      cursor: pointer;
+    }
+    #nextBtn:hover {
+      background-color: #228b22; /* Lighter green on hover */
+    }
+    @media (orientation: landscape) {
+      .card {
+        font-size: 15vw; /* Adjusted font size in landscape */
+        width: 90vw;
+        height: 70vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="flashcard" class="card"></div>
+  <button id="nextBtn" onclick="nextCard()">Next Card</button>
+
+  <script>
+    const words = [
+      // 身體部位
+      "耳朵", "鼻子", "嘴巴", "身體",
+      // 季節與時間
+      "春天", "晚上", "時候", "新年", "月亮",
+      // 學校相關
+      "開學", "課室", "操場", "放學", "讀書", "寫字",
+      // 活動與動作
+      "玩耍", "跳舞", "點頭", "說話", "起來", "出來", "休息",
+      // 情感與狀態
+      "高興", "喜歡", "自己",
+      // 物品與服裝
+      "圖畫", "毛衣", "衣服", "糖果", "皮球", "電視",
+      // 自然現象與生物
+      "雨點", "蜜蜂", "動物",
+      // 食物
+      "食物",
+      // 社交與互動
+      "一起", "再見",
+      // 其他
+      "顏色", "兒童", "沒有"
+    ];
+    let currentIndex = 0;
+
+    function showCard() {
+      const card = document.getElementById("flashcard");
+      card.style.display = "flex"; /* Use flex to ensure text centering */
+      card.textContent = words[currentIndex];
+    }
+
+    function nextCard() {
+      currentIndex = (currentIndex + 1) % words.length;
+      showCard();
+    }
+
+    // Start with the first card
+    showCard();
+  </script>
+</body>
+</html>

@@ -32,6 +32,7 @@
       display: flex; /* Flexbox for centering text */
       align-items: center;
       justify-content: center;
+      overflow-wrap: break-word; /* Handle long sentences */
     }
     #nextBtn {
       position: absolute;
@@ -56,6 +57,11 @@
         height: 70vh;
       }
     }
+    @media (max-width: 600px) {
+      .card {
+        font-size: 10vw; /* Smaller font for long sentences on small screens */
+      }
+    }
   </style>
 </head>
 <body>
@@ -64,9 +70,24 @@
 
   <script>
     const words = [
+      // Existing professions
       "doctor", "writer", "engineer", "lawyer",
       "chef", "farmer", "firefighter", "nurse",
-      "scientist", "waiter", "pilot"
+      "scientist", "waiter", "pilot",
+      // New words
+      "sleep", "into", "find", "light",
+      "please", "round", "fall", "off",
+      // New sentences
+      "I want to jump on the bed.",
+      "We shower in the bathroom.",
+      "We eat in the dining room.",
+      "There is a stove in the kitchen.",
+      "There are cushions in the living room.",
+      "There is a cupboard next to the mirror.",
+      "They are sliding on the smooth coffee table.",
+      "There is a teddy bear in front of the TV.",
+      "I want to write on the desk.",
+      "Do you like the round bookshelf or the square bookshelf?"
     ];
     let currentIndex = 0;
 

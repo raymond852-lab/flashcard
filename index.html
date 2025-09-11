@@ -11,33 +11,54 @@
       overflow: hidden;
       background-color: #B2EBF2; /* Light Tiffany blue background */
     }
+    #landingPage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2vh;
+    }
+    #studyBtn, #dictateBtn {
+      padding: 2vh 4vw;
+      font-size: 5vw;
+      border: none;
+      border-radius: 1vh;
+      background-color: #26A69A; /* Darker Tiffany blue button */
+      color: white;
+      cursor: pointer;
+    }
+    #studyBtn:hover, #dictateBtn:hover {
+      background-color: #4DD0E1; /* Lighter Tiffany blue on hover */
+    }
     .card {
-      display: none;
+      display: none; /* Hidden by default */
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       background-color: #40C4B4; /* Tiffany blue card */
-      padding: 1vh; /* Minimal padding to maximize text area */
+      padding: 1vh;
       border-radius: 2vh;
-      font-size: 10vw; /* Default font size for words */
-      line-height: 1.1; /* Tightened for larger text */
+      font-size: 10vw;
+      line-height: 1.1;
       text-align: center;
-      width: 95vw; /* Nearly full screen width */
-      height: 60vh; /* Increased height for proportion */
+      width: 95vw;
+      height: 60vh;
       box-sizing: border-box;
       color: white;
-      border: 0.5vh solid #26A69A; /* Darker Tiffany blue border */
-      box-shadow: 0 0 1vh rgba(0, 0, 0, 0.1); /* Soft shadow */
-      display: flex; /* Flexbox for centering text */
+      border: 0.5vh solid #26A69A;
+      box-shadow: 0 0 1vh rgba(0, 0, 0, 0.1);
       align-items: center;
       justify-content: center;
-      overflow-wrap: break-word; /* Handle long sentences */
+      overflow-wrap: break-word;
     }
     .card.sentence {
-      font-size: 6vw; /* Smaller font size for sentences */
+      font-size: 6vw;
     }
-    #nextBtn, #playBtn {
+    #nextBtn, #playBtn, #checkBtn {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
@@ -45,49 +66,97 @@
       font-size: 4vw;
       border: none;
       border-radius: 1vh;
-      background-color: #26A69A; /* Darker Tiffany blue button */
+      background-color: #26A69A;
       color: white;
       cursor: pointer;
+      display: none; /* Hidden by default */
     }
     #nextBtn {
-      bottom: 10vh; /* Adjusted to make space for play button */
+      bottom: 15vh;
     }
     #playBtn {
-      bottom: 3vh; /* Positioned below next button */
+      bottom: 8vh;
     }
-    #nextBtn:hover, #playBtn:hover {
-      background-color: #4DD0E1; /* Lighter Tiffany blue on hover */
+    #checkBtn {
+      bottom: 1vh;
+    }
+    #nextBtn:hover, #playBtn:hover, #checkBtn:hover {
+      background-color: #4DD0E1;
+    }
+    #dictationInput {
+      position: absolute;
+      bottom: 22vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw;
+      padding: 1vh;
+      font-size: 4vw;
+      border-radius: 1vh;
+      border: 0.5vh solid #26A69A;
+      display: none; /* Hidden by default */
+    }
+    #feedback {
+      position: absolute;
+      top: 10vh;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 4vw;
+      color: #ffffff;
+      background-color: rgba(38, 166, 154, 0.8);
+      padding: 1vh 2vw;
+      border-radius: 1vh;
+      display: none;
     }
     @media (orientation: landscape) {
       .card {
-        font-size: 8vw; /* Adjusted font size for words in landscape */
+        font-size: 8vw;
         width: 90vw;
         height: 70vh;
       }
       .card.sentence {
-        font-size: 5vw; /* Adjusted font size for sentences in landscape */
+        font-size: 5vw;
       }
     }
     @media (max-width: 600px) {
       .card {
-        font-size: 8vw; /* Smaller font for words on small screens */
+        font-size: 8vw;
       }
       .card.sentence {
-        font-size: 4vw; /* Smaller font for sentences on small screens */
+        font-size: 4vw;
+      }
+      #studyBtn, #dictateBtn {
+        font-size: 6vw;
       }
       #nextBtn {
-        bottom: 12vh; /* Adjusted for smaller screens */
+        bottom: 18vh;
       }
       #playBtn {
+        bottom: 10vh;
+      }
+      #checkBtn {
         bottom: 2vh;
+      }
+      #dictationInput {
+        bottom: 26vh;
+        font-size: 5vw;
+      }
+      #feedback {
+        font-size: 5vw;
       }
     }
   </style>
 </head>
 <body>
+  <div id="landingPage">
+    <button id="studyBtn" onclick="startStudyMode()">Study</button>
+    <button id="dictateBtn" onclick="startDictateMode()">Dictate</button>
+  </div>
   <div id="flashcard" class="card"></div>
+  <div id="feedback"></div>
+  <input id="dictationInput" type="text" placeholder="Type what you hear">
   <button id="nextBtn" onclick="nextCard()">Next Card</button>
   <button id="playBtn" onclick="playPronunciation()">Play Pronunciation</button>
+  <button id="checkBtn" onclick="checkAnswer()">Check Answer</button>
   <audio id="cardSound" src="https://www.soundjay.com/buttons/button-09a.mp3"></audio>
 
   <script>
@@ -112,25 +181,68 @@
       "Do you like the round bookshelf or the square bookshelf?"
     ];
     let currentIndex = 0;
+    let currentMode = null; // 'study' or 'dictate'
     const cardSound = document.getElementById("cardSound");
+    const dictationInput = document.getElementById("dictationInput");
+    const feedback = document.getElementById("feedback");
+    const flashcard = document.getElementById("flashcard");
+    const nextBtn = document.getElementById("nextBtn");
+    const playBtn = document.getElementById("playBtn");
+    const checkBtn = document.getElementById("checkBtn");
+    const landingPage = document.getElementById("landingPage");
 
     function showCard() {
-      const card = document.getElementById("flashcard");
-      card.style.display = "flex"; /* Use flex to ensure text centering */
-      card.textContent = words[currentIndex];
-      // Apply smaller font size for sentences (entries with a period)
+      flashcard.textContent = words[currentIndex];
       if (words[currentIndex].includes(".")) {
-        card.classList.add("sentence");
+        flashcard.classList.add("sentence");
       } else {
-        card.classList.remove("sentence");
+        flashcard.classList.remove("sentence");
       }
+      dictationInput.value = "";
+      feedback.style.display = "none";
+      if (currentMode === 'study') {
+        flashcard.style.display = "flex";
+        dictationInput.style.display = "none";
+        checkBtn.style.display = "none";
+        nextBtn.style.display = "block";
+        playBtn.style.display = "block";
+      } else if (currentMode === 'dictate') {
+        flashcard.style.display = "none";
+        dictationInput.style.display = "none";
+        checkBtn.style.display = "block";
+        nextBtn.style.display = "block";
+        playBtn.style.display = "block";
+      }
+    }
+
+    function startStudyMode() {
+      currentMode = 'study';
+      landingPage.style.display = "none";
+      flashcard.style.display = "none";
+      dictationInput.style.display = "none";
+      feedback.style.display = "none";
+      nextBtn.style.display = "none";
+      playBtn.style.display = "none";
+      checkBtn.style.display = "none";
+      showCard();
+    }
+
+    function startDictateMode() {
+      currentMode = 'dictate';
+      landingPage.style.display = "none";
+      flashcard.style.display = "none";
+      dictationInput.style.display = "none";
+      feedback.style.display = "none";
+      nextBtn.style.display = "none";
+      playBtn.style.display = "none";
+      checkBtn.style.display = "none";
+      showCard();
     }
 
     function nextCard() {
       currentIndex = (currentIndex + 1) % words.length;
       showCard();
-      // Play click sound on card change
-      cardSound.currentTime = 0; // Reset sound to start
+      cardSound.currentTime = 0;
       cardSound.play().catch(error => {
         console.log("Sound playback failed:", error);
       });
@@ -138,21 +250,47 @@
 
     function playPronunciation() {
       const utterance = new SpeechSynthesisUtterance(words[currentIndex]);
-      utterance.lang = 'en-GB'; // Set UK English accent
-      // Select a UK voice if available
+      utterance.lang = 'en-GB';
       const voices = speechSynthesis.getVoices();
-      const ukVoice = voices.find(voice => voice.lang === 'en-GB') || voices[0];
-      utterance.voice = ukVoice;
+      // Prefer female UK voice (e.g., "Samantha" or Siri-like)
+      const femaleVoice = voices.find(voice => voice.lang === 'en-GB' && voice.name.toLowerCase().includes('female')) || 
+                         voices.find(voice => voice.lang === 'en-GB') || voices[0];
+      utterance.voice = femaleVoice;
       speechSynthesis.speak(utterance);
+      if (currentMode === 'dictate') {
+        dictationInput.style.display = "block";
+        dictationInput.focus();
+      }
     }
 
-    // Ensure voices are loaded before first play (especially for Safari)
+    function checkAnswer() {
+      if (currentMode !== 'dictate') return;
+      const userInput = dictationInput.value.trim().toLowerCase();
+      const correctAnswer = words[currentIndex].toLowerCase();
+      flashcard.style.display = "flex";
+      feedback.style.display = "block";
+      if (userInput === correctAnswer) {
+        feedback.textContent = "Correct! Well done!";
+        feedback.style.backgroundColor = "rgba(38, 166, 154, 0.8)";
+      } else {
+        feedback.textContent = `Incorrect. The correct answer is: "${words[currentIndex]}"`;
+        feedback.style.backgroundColor = "rgba(211, 47, 47, 0.8)";
+      }
+    }
+
+    // Ensure voices are loaded
     window.speechSynthesis.onvoiceschanged = function() {
-      // Voices loaded, no action needed unless play is triggered
+      // Voices loaded
     };
 
-    // Start with the first card
-    showCard();
+    // Initialize landing page
+    landingPage.style.display = "flex";
+    flashcard.style.display = "none";
+    dictationInput.style.display = "none";
+    feedback.style.display = "none";
+    nextBtn.style.display = "none";
+    playBtn.style.display = "none";
+    checkBtn.style.display = "none";
   </script>
 </body>
 </html>

@@ -21,7 +21,7 @@
       align-items: center;
       gap: 2vh;
     }
-    #studyBtn, #dictateBtn {
+    #studyBtn, #dictateBtn, #backBtn {
       padding: 2vh 4vw;
       font-size: 5vw;
       border: none;
@@ -30,11 +30,11 @@
       color: white;
       cursor: pointer;
     }
-    #study centoBtn:hover, #dictateBtn:hover {
+    #studyBtn:hover, #dictateBtn:hover, #backBtn:hover {
       background-color: #4DD0E1; /* Lighter Tiffany blue on hover */
     }
     .card {
-      display: none; /* Hidden by default */
+      display: none;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -69,23 +69,27 @@
       background-color: #26A69A;
       color: white;
       cursor: pointer;
-      display: none; /* Hidden by default */
+      display: none;
     }
     #nextBtn {
-      bottom: 15vh;
+      bottom: 22vh;
     }
     #playBtn {
-      bottom: 8vh;
+      bottom: 15vh;
     }
     #checkBtn {
-      bottom: 1vh;
+      bottom: 8vh;
     }
-    #nextBtn:hover, #playBtn:hover, #checkBtn:hover {
+    #backBtn {
+      bottom: 1vh;
+      display: none;
+    }
+    #nextBtn:hover, #playBtn:hover, #checkBtn:hover, #backBtn:hover {
       background-color: #4DD0E1;
     }
     #dictationInput {
       position: absolute;
-      bottom: 22vh;
+      bottom: 29vh;
       left: 50%;
       transform: translateX(-50%);
       width: 80vw;
@@ -93,7 +97,7 @@
       font-size: 4vw;
       border-radius: 1vh;
       border: 0.5vh solid #26A69A;
-      display: none; /* Hidden by default */
+      display: none;
     }
     #feedback {
       position: absolute;
@@ -104,6 +108,18 @@
       color: #ffffff;
       background-color: rgba(38, 166, 154, 0.8);
       padding: 1vh 2vw;
+      border-radius: 1vh;
+      display: none;
+    }
+    #score {
+      position: absolute;
+      top: 5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 4vw;
+      color: #ffffff;
+      background-color: rgba(38, 166, 154, 0.8);
+      padding: 0.5vh 1vw;
       border-radius: 1vh;
       display: none;
     }
@@ -124,23 +140,26 @@
       .card.sentence {
         font-size: 4vw;
       }
-      #studyBtn, #dictateBtn {
+      #studyBtn, #dictateBtn, #backBtn {
         font-size: 6vw;
       }
       #nextBtn {
-        bottom: 18vh;
+        bottom: 25vh;
       }
       #playBtn {
-        bottom: 10vh;
+        bottom: 17vh;
       }
       #checkBtn {
-        bottom: 2vh;
+        bottom: 9vh;
+      }
+      #backBtn {
+        bottom: 1vh;
       }
       #dictationInput {
-        bottom: 26vh;
+        bottom: 33vh;
         font-size: 5vw;
       }
-      #feedback {
+      #feedback, #score {
         font-size: 5vw;
       }
     }
@@ -153,23 +172,22 @@
   </div>
   <div id="flashcard" class="card"></div>
   <div id="feedback"></div>
+  <div id="score"></div>
   <input id="dictationInput" type="text" placeholder="Type what you hear">
   <button id="nextBtn" onclick="nextCard()">Next Card</button>
   <button id="playBtn" onclick="playPronunciation()">Play Pronunciation</button>
   <button id="checkBtn" onclick="checkAnswer()">Check Answer</button>
+  <button id="backBtn" onclick="returnToLanding()">Back to Menu</button>
   <audio id="cardSound" src="https://www.soundjay.com/buttons/button-09a.mp3"></audio>
   <audio id="clapSound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
   <script>
     const words = [
-      // Existing professions
       "doctor", "writer", "engineer", "lawyer",
       "chef", "farmer", "firefighter", "nurse",
       "scientist", "waiter", "pilot",
-      // New words
       "sleep", "into", "find", "light",
       "please", "round", "fall", "off",
-      // New sentences
       "I want to jump on the bed.",
       "We shower in the bathroom.",
       "We eat in the dining room.",
@@ -182,15 +200,19 @@
       "Do you like the round bookshelf or the square bookshelf?"
     ];
     let currentIndex = 0;
-    let currentMode = null; // 'study' or 'dictate'
+    let currentMode = null;
+    let correctAnswers = 0;
+    let totalAttempts = 0;
     const cardSound = document.getElementById("cardSound");
     const clapSound = document.getElementById("clapSound");
     const dictationInput = document.getElementById("dictationInput");
     const feedback = document.getElementById("feedback");
+    const score = document.getElementById("score");
     const flashcard = document.getElementById("flashcard");
     const nextBtn = document.getElementById("nextBtn");
     const playBtn = document.getElementById("playBtn");
     const checkBtn = document.getElementById("checkBtn");
+    const backBtn = document.getElementById("backBtn");
     const landingPage = document.getElementById("landingPage");
 
     function showCard() {
@@ -208,12 +230,18 @@
         checkBtn.style.display = "none";
         nextBtn.style.display = "block";
         playBtn.style.display = "block";
+        backBtn.style.display = "block";
+        score.style.display = "none";
       } else if (currentMode === 'dictate') {
         flashcard.style.display = "none";
         dictationInput.style.display = "none";
         checkBtn.style.display = "block";
         nextBtn.style.display = "block";
         playBtn.style.display = "block";
+        backBtn.style.display = "block";
+        score.style.display = "block";
+        score.textContent = `Score: ${correctAnswers}/${totalAttempts}`;
+        playPronunciation(); // Auto-play in Dictate mode
       }
     }
 
@@ -226,6 +254,10 @@
       nextBtn.style.display = "none";
       playBtn.style.display = "none";
       checkBtn.style.display = "none";
+      backBtn.style.display = "none";
+      score.style.display = "none";
+      correctAnswers = 0;
+      totalAttempts = 0;
       showCard();
     }
 
@@ -238,7 +270,27 @@
       nextBtn.style.display = "none";
       playBtn.style.display = "none";
       checkBtn.style.display = "none";
+      backBtn.style.display = "none";
+      score.style.display = "none";
+      correctAnswers = 0;
+      totalAttempts = 0;
       showCard();
+    }
+
+    function returnToLanding() {
+      currentMode = null;
+      currentIndex = 0;
+      correctAnswers = 0;
+      totalAttempts = 0;
+      landingPage.style.display = "flex";
+      flashcard.style.display = "none";
+      dictationInput.style.display = "none";
+      feedback.style.display = "none";
+      nextBtn.style.display = "none";
+      playBtn.style.display = "none";
+      checkBtn.style.display = "none";
+      backBtn.style.display = "none";
+      score.style.display = "none";
     }
 
     function nextCard() {
@@ -254,7 +306,6 @@
       const utterance = new SpeechSynthesisUtterance(words[currentIndex]);
       utterance.lang = 'en-GB';
       const voices = speechSynthesis.getVoices();
-      // Prefer female UK voice (e.g., "Samantha" or Siri-like)
       const femaleVoice = voices.find(voice => voice.lang === 'en-GB' && voice.name.toLowerCase().includes('female')) || 
                          voices.find(voice => voice.lang === 'en-GB') || voices[0];
       utterance.voice = femaleVoice;
@@ -269,9 +320,11 @@
       if (currentMode !== 'dictate') return;
       const userInput = dictationInput.value.trim().toLowerCase();
       const correctAnswer = words[currentIndex].toLowerCase();
+      totalAttempts++;
       flashcard.style.display = "flex";
       feedback.style.display = "block";
       if (userInput === correctAnswer) {
+        correctAnswers++;
         feedback.textContent = "Correct! Well done!";
         feedback.style.backgroundColor = "rgba(38, 166, 154, 0.8)";
         clapSound.currentTime = 0;
@@ -282,12 +335,11 @@
         feedback.textContent = `Incorrect. The correct answer is: "${words[currentIndex]}"`;
         feedback.style.backgroundColor = "rgba(211, 47, 47, 0.8)";
       }
+      score.textContent = `Score: ${correctAnswers}/${totalAttempts}`;
     }
 
     // Ensure voices are loaded
-    window.speechSynthesis.onvoiceschanged = function() {
-      // Voices loaded
-    };
+    window.speechSynthesis.onvoiceschanged = function() {};
 
     // Initialize landing page
     landingPage.style.display = "flex";
@@ -297,6 +349,8 @@
     nextBtn.style.display = "none";
     playBtn.style.display = "none";
     checkBtn.style.display = "none";
+    backBtn.style.display = "none";
+    score.style.display = "none";
   </script>
 </body>
 </html>

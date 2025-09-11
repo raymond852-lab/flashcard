@@ -30,7 +30,7 @@
       color: white;
       cursor: pointer;
     }
-    #studyBtn:hover, #dictateBtn:hover {
+    #study centoBtn:hover, #dictateBtn:hover {
       background-color: #4DD0E1; /* Lighter Tiffany blue on hover */
     }
     .card {
@@ -158,6 +158,7 @@
   <button id="playBtn" onclick="playPronunciation()">Play Pronunciation</button>
   <button id="checkBtn" onclick="checkAnswer()">Check Answer</button>
   <audio id="cardSound" src="https://www.soundjay.com/buttons/button-09a.mp3"></audio>
+  <audio id="clapSound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
   <script>
     const words = [
@@ -183,6 +184,7 @@
     let currentIndex = 0;
     let currentMode = null; // 'study' or 'dictate'
     const cardSound = document.getElementById("cardSound");
+    const clapSound = document.getElementById("clapSound");
     const dictationInput = document.getElementById("dictationInput");
     const feedback = document.getElementById("feedback");
     const flashcard = document.getElementById("flashcard");
@@ -272,6 +274,10 @@
       if (userInput === correctAnswer) {
         feedback.textContent = "Correct! Well done!";
         feedback.style.backgroundColor = "rgba(38, 166, 154, 0.8)";
+        clapSound.currentTime = 0;
+        clapSound.play().catch(error => {
+          console.log("Clap sound playback failed:", error);
+        });
       } else {
         feedback.textContent = `Incorrect. The correct answer is: "${words[currentIndex]}"`;
         feedback.style.backgroundColor = "rgba(211, 47, 47, 0.8)";

@@ -9,7 +9,7 @@
       height: 100vh;
       width: 100vw;
       overflow: hidden;
-      background-color: #98fb98; /* Light green cozy background */
+      background-color: #B2EBF2; /* Light Tiffany blue background */
     }
     .card {
       display: none;
@@ -17,22 +17,25 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: #3cb371; /* Medium green card */
+      background-color: #40C4B4; /* Tiffany blue card */
       padding: 1vh; /* Minimal padding to maximize text area */
       border-radius: 2vh;
-      font-size: 18vw; /* Larger font size for maximum display */
+      font-size: 10vw; /* Default font size for words */
       line-height: 1.1; /* Tightened for larger text */
       text-align: center;
       width: 95vw; /* Nearly full screen width */
       height: 60vh; /* Increased height for proportion */
       box-sizing: border-box;
       color: white;
-      border: 0.5vh solid #2e8b57; /* Darker green border for coziness */
+      border: 0.5vh solid #26A69A; /* Darker Tiffany blue border */
       box-shadow: 0 0 1vh rgba(0, 0, 0, 0.1); /* Soft shadow */
       display: flex; /* Flexbox for centering text */
       align-items: center;
       justify-content: center;
       overflow-wrap: break-word; /* Handle long sentences */
+    }
+    .card.sentence {
+      font-size: 6vw; /* Smaller font size for sentences */
     }
     #nextBtn {
       position: absolute;
@@ -43,23 +46,29 @@
       font-size: 4vw;
       border: none;
       border-radius: 1vh;
-      background-color: #2e8b57; /* Dark green button */
+      background-color: #26A69A; /* Darker Tiffany blue button */
       color: white;
       cursor: pointer;
     }
     #nextBtn:hover {
-      background-color: #228b22; /* Lighter green on hover */
+      background-color: #4DD0E1; /* Lighter Tiffany blue on hover */
     }
     @media (orientation: landscape) {
       .card {
-        font-size: 15vw; /* Adjusted font size in landscape */
+        font-size: 8vw; /* Adjusted font size for words in landscape */
         width: 90vw;
         height: 70vh;
+      }
+      .card.sentence {
+        font-size: 5vw; /* Adjusted font size for sentences in landscape */
       }
     }
     @media (max-width: 600px) {
       .card {
-        font-size: 10vw; /* Smaller font for long sentences on small screens */
+        font-size: 8vw; /* Smaller font for words on small screens */
+      }
+      .card.sentence {
+        font-size: 4vw; /* Smaller font for sentences on small screens */
       }
     }
   </style>
@@ -95,6 +104,12 @@
       const card = document.getElementById("flashcard");
       card.style.display = "flex"; /* Use flex to ensure text centering */
       card.textContent = words[currentIndex];
+      // Apply smaller font size for sentences (entries with a period)
+      if (words[currentIndex].includes(".")) {
+        card.classList.add("sentence");
+      } else {
+        card.classList.remove("sentence");
+      }
     }
 
     function nextCard() {

@@ -37,9 +37,8 @@
     .card.sentence {
       font-size: 6vw; /* Smaller font size for sentences */
     }
-    #nextBtn {
+    #nextBtn, #playBtn {
       position: absolute;
-      bottom: 5vh;
       left: 50%;
       transform: translateX(-50%);
       padding: 2vh 4vw;
@@ -50,7 +49,13 @@
       color: white;
       cursor: pointer;
     }
-    #nextBtn:hover {
+    #nextBtn {
+      bottom: 10vh; /* Adjusted to make space for play button */
+    }
+    #playBtn {
+      bottom: 3vh; /* Positioned below next button */
+    }
+    #nextBtn:hover, #playBtn:hover {
       background-color: #4DD0E1; /* Lighter Tiffany blue on hover */
     }
     @media (orientation: landscape) {
@@ -70,12 +75,20 @@
       .card.sentence {
         font-size: 4vw; /* Smaller font for sentences on small screens */
       }
+      #nextBtn {
+        bottom: 12vh; /* Adjusted for smaller screens */
+      }
+      #playBtn {
+        bottom: 2vh;
+      }
     }
   </style>
 </head>
 <body>
   <div id="flashcard" class="card"></div>
   <button id="nextBtn" onclick="nextCard()">Next Card</button>
+  <button id="playBtn" onclick="playPronunciation()">Play Pronunciation</button>
+  <audio id="cardSound" src="https://www.soundjay.com/buttons/button-09a.mp3"></audio>
 
   <script>
     const words = [
@@ -99,6 +112,7 @@
       "Do you like the round bookshelf or the square bookshelf?"
     ];
     let currentIndex = 0;
+    const cardSound = document.getElementById("cardSound");
 
     function showCard() {
       const card = document.getElementById("flashcard");
@@ -115,7 +129,27 @@
     function nextCard() {
       currentIndex = (currentIndex + 1) % words.length;
       showCard();
+      // Play click sound on card change
+      cardSound.currentTime = 0; // Reset sound to start
+      cardSound.play().catch(error => {
+        console.log("Sound playback failed:", error);
+      });
     }
+
+    function playPronunciation() {
+      const utterance = new SpeechSynthesisUtterance(words[currentIndex]);
+      utterance.lang = 'en-GB'; // Set UK English accent
+      // Select a UK voice if available
+      const voices = speechSynthesis.getVoices();
+      const ukVoice = voices.find(voice => voice.lang === 'en-GB') || voices[0];
+      utterance.voice = ukVoice;
+      speechSynthesis.speak(utterance);
+    }
+
+    // Ensure voices are loaded before first play (especially for Safari)
+    window.speechSynthesis.onvoiceschanged = function() {
+      // Voices loaded, no action needed unless play is triggered
+    };
 
     // Start with the first card
     showCard();

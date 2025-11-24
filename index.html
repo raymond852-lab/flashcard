@@ -6,78 +6,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
     * {margin:0;padding:0;box-sizing:border-box;}
-    body {
-      height:100vh;width:100vw;overflow:hidden;
-      background:linear-gradient(135deg,#B2EBF2,#81D4FA);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-      display:flex;align-items:center;justify-content:center;
-    }
-    #landing {
-      text-align:center;color:#004D40;
-      padding:8vw;
-      animation:fadeIn 1s ease-in;
-    }
-    h1 {
-      font-size:12vw;
-      margin-bottom:8vh;
-      text-shadow:0 4px 10px rgba(0,0,0,0.2);
-    }
-    .btn {
-      display:block;width:80vw;max-width:400px;margin:5vh auto;
-      padding:5vw 0;font-size:9vw;font-weight:bold;
-      background:#FF5722;color:white;border:none;border-radius:20px;
-      box-shadow:0 8px 20px rgba(0,0,0,0.3);
-      cursor:pointer;transform:scale(1);
-      transition:all 0.2s;
-    }
-    .btn:hover {transform:scale(1.05);background:#F50057;}
-    .btn:active {transform:scale(0.98);}
+    body {font-family:-apple-system,system-ui,sans-serif;background:linear-gradient(135deg,#B2EBF2,#81D4FA);height:100vh;width:100vw;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+    
+    /* Landing Page */
+    #landing {text-align:center;width:100%;padding:10vw;}
+    h1 {font-size:11vw;color:#004D40;margin-bottom:10vh;text-shadow:0 4px 15px rgba(0,0,0,0.2);}
+    .btn {display:block;width:78vw;max-width:420px;margin:7vh auto;padding:5vw;font-size:9vw;font-weight:bold;color:white;border:none;border-radius:28px;
+          box-shadow:0 12px 30px rgba(0,0,0,0.3);cursor:pointer;transition:all 0.2s;}
     #studyBtn {background:#26A69A;}
-    #studyBtn:hover {background:#00695C;}
+    #studyBtn:active {background:#00695C;transform:translateY(4px);}
     #dictateBtn {background:#FF9800;}
-    #dictateBtn:hover {background:#E65100;}
+    #dictateBtn:active {background:#E65100;transform:translateY(4px);}
 
-    /* Game screen */
-    #game {display:none;flex-direction:column;align-items:center;justify-content:center;height:100vh;width:100vw;background:#B2EBF2;}
-    #card {
-      background:#009688;color:white;width:90vw;height:55vh;border-radius:30px;
-      box-shadow:0 15px 40px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;
-      font-size:11vw;text-align:center;padding:5vw;font-weight:bold;
-      margin-bottom:5vh;
-    }
-    #card.sentence {font-size:7vw;}
-    #input {width:90vw;padding:4vw;font-size:7vw;border-radius:20px;border:none;outline:none;text-align:center;margin:3vh 0;box-shadow:inset 0 5px 15px rgba(0,0,0,0.2);}
-    #controls button {
-      margin:2vh;padding:3vw 6vw;font-size:6vw;border:none;border-radius:15px;
-      background:#004D40;color:white;cursor:pointer;box-shadow:0 5px 15px rgba(0,0,0,0.3);
-    }
-    #score, #feedback {position:fixed;left:50%;transform:translateX(-50%);padding:2vw 5vw;border-radius:15px;color:white;font-weight:bold;font-size:5vw;z-index:10;}
-    #score {top:5vh;background:rgba(0,77,64,0.9);}
-    #feedback {top:15vh;background:rgba(0,150,136,0.95);}
+    /* Game Screen */
+    #game {display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#B2EBF2;flex-direction:column;align-items:center;padding-top:10vh;}
+    #score {position:fixed;top:8vh;background:rgba(0,77,64,0.95);color:white;padding:12px 30px;border-radius:25px;font-size:5.5vw;font-weight:bold;z-index:10;}
+    #card {background:#009688;color:white;width:88vw;height:50vh;border-radius:40px;box-shadow:0 20px 50px rgba(0,0,0,0.35);
+           display:flex;align-items:center;justify-content:center;text-align:center;font-size:11vw;font-weight:bold;padding:6vw;line-height:1.4;}
+    #card.sentence {font-size:7.5vw;}
+    #input {margin:7vh 0 5vh;width:88vw;padding:4.5vw;font-size:7vw;border-radius:30px;border:none;text-align:center;outline:none;
+            box-shadow:inset 0 6px 20px rgba(0,0,0,0.2);}
+
+    /* Clean bottom button bar */
+    #bar {position:fixed;bottom:5vh;left:50%;transform:translateX(-50%);background:rgba(0,77,64,0.98);border-radius:35px;
+          padding:2.5vh 5vw;display:flex;gap:6vw;box-shadow:0 15px 40px rgba(0,0,0,0.4);z-index:20;}
+    #bar button {background:transparent;color:white;border:none;font-size:5.8vw;font-weight:bold;cursor:pointer;padding:1vh 0;min-width:50px;}
+
+    canvas
+
     canvas {position:fixed;top:0;left:0;pointer-events:none;z-index:999;}
-    @keyframes fadeIn {from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
   </style>
 </head>
 <body>
 
-  <!-- Beautiful Landing Page -->
+  <!-- Landing -->
   <div id="landing">
     <h1>P1 Dictation</h1>
-    <button id="studyBtn" class="btn">Study Mode</button>
-    <button id="dictateBtn" class="btn">Dictate Mode</button>
+    <button class="btn" id="studyBtn">Study Mode</button>
+    <button class="btn" id="dictateBtn">Dictate Mode</button>
   </div>
 
-  <!-- Game Screen -->
+  <!-- Game -->
   <div id="game">
     <div id="score">Score: 0/0</div>
-    <div id="feedback"></div>
     <div id="card"></div>
     <input id="input" placeholder="Type here..." autocomplete="off">
-    <div id="controls">
-      <button onclick="speak()">Play Sound</button>
+    <div id="bar">
+      <button onclick="speak()">Play</button>
       <button onclick="check()">Check</button>
       <button onclick="next()">Next</button>
-      <button onclick="home()">Menu</button>
+      <button onclick="location.reload()">Menu</button>
     </div>
   </div>
 
@@ -85,7 +63,7 @@
   <audio id="clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
   <script>
-    // Your son's exact 10 Dec words (change here every week)
+    // ←←← CHANGE WORDS HERE EVERY WEEK (your son's 10 Dec list already loaded)
     const words = `o
 s
 m
@@ -108,51 +86,60 @@ Tom has three rulers and six erasers.
 We have three pens.
 They have five school bags.`.trim().split('\n').map(s=>s.trim());
 
-    let i=0, correct=0, total=0;
-    const card=document.getElementById('card'), input=document.getElementById('input'),
-          score=document.getElementById('score'), fb=document.getElementById('feedback');
+    let i = 0, correct = 0, total = 0;
+    const card = document.getElementById('card');
+    const input = document.getElementById('input');
+    const score = document.getElementById('score');
 
-    document.getElementById('studyBtn').onclick=()=>start('study');
-    document.getElementById('dictateBtn').onclick=()=>start('dictate');
+    document.getElementById('studyBtn').onclick = () => start('study');
+    document.getElementById('dictateBtn').onclick = () => start('dictate');
 
-    function start(mode){
-      document.getElementById('landing').style.display='none';
-      document.getElementById('game').style.display='flex';
-      i=correct=total=0; score.textContent='Score: 0/0'; fb.style.display='none';
-      if(mode==='study') {input.style.display='none'; document.querySelector('#controls button:nth-child(2)').style.display='none';}
-      else {input.style.display='block'; document.querySelector('#controls button:nth-child(2)').style.display='block';}
+    function start(mode) {
+      document.getElementById('landing').style.display = 'none';
+      document.getElementById('game').style.display = 'flex';
+      i = correct = total = 0;
+      score.textContent = 'Score: 0/0';
+      input.style.display = (mode==='study') ? 'none' : 'block';
+      document.querySelector('#bar button:nth-child(2)').style.display = (mode==='study') ? 'none' : 'block';
       show();
     }
-    function home(){location.reload();}
-    function show(){
-      card.textContent=words[i];
-      card.className = words[i].includes('.')?'card sentence':'card';
-      input.value=''; fb.style.display='none';
-      if(document.getElementById('game').style.display==='flex' && input.style.display==='block') {input.focus(); speak();}
+
+    function show() {
+      card.textContent = words[i];
+      card.className = words[i].includes('.') ? 'card sentence' : 'card';
+      input.value = '';
+      if (input.style.display === 'block') { input.focus(); speak(); }
     }
-    function next(){i=(i+1)%words.length; show();}
-    function speak(){speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(words[i]));}
-    function check(){
+
+    function next() { i = (i + 1) % words.length; show(); }
+    function speak() { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(words[i])); }
+    
+    function check() {
       total++;
-      if(input.value.trim().toLowerCase()===words[i].toLowerCase()){
-        correct++; fb.textContent='Correct!'; fb.style.background='#2E7D32';
+      if (input.value.trim().toLowerCase() === words[i].toLowerCase()) {
+        correct++;
+        score.textContent = `Score: ${correct}/${total} Correct!`;
         document.getElementById('clap').play();
-        if(correct===words.length) setTimeout(confetti,800);
-      }else{
-        fb.textContent='Wrong → '+words[i]; fb.style.background='#C62828';
+        if (correct === words.length) setTimeout(confetti, 800);
+      } else {
+        score.textContent = `Score: ${correct}/${total} → ${words[i]}`;
       }
-      fb.style.display='block'; card.style.display='flex'; score.textContent=`Score: ${correct}/${total}`;
+      card.style.display = 'flex';
     }
-    function confetti(){
-      const canvas=document.getElementById('confetti'); canvas.style.display='block';
-      canvas.width=innerWidth; canvas.height=innerHeight; const ctx=canvas.getContext('2d');
-      const pieces=[]; for(let j=0;j<350;j++) pieces.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height-100,color:`hsl(${Math.random()*360},100%,50%)`,speed:Math.random()*8+5});
-      let t=0; const anim=setInterval(()=>{
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        pieces.forEach(p=>{p.y+=p.speed; if(p.y>canvas.height) p.y=-20; ctx.fillStyle=p.color; ctx.fillRect(p.x+Math.sin(t)*20,p.y,12,12);});
+
+    function confetti() {
+      const c = document.getElementById('confetti'); c.style.display = 'block';
+      c.width = innerWidth; c.height = innerHeight;
+      const ctx = c.getContext('2d');
+      const p = [];
+      for(let j=0; j<400; j++) p.push({x:Math.random()*c.width, y:Math.random()*c.height-100, c:`hsl(${Math.random()*360},100%,50%)`, s:Math.random()*10+5});
+      let t=0;
+      const anim = setInterval(() => {
+        ctx.clearRect(0,0,c.width,c.height);
+        p.forEach(o=>{ o.y += o.s; if(o.y>c.height) o.y=-20; ctx.fillStyle=o.c; ctx.fillRect(o.x+Math.sin(t)*15,o.y,14,14); });
         t+=0.1;
-      },20);
-      setTimeout(()=>{clearInterval(anim);canvas.style.display='none';},5000);
+      }, 20);
+      setTimeout(()=>{ clearInterval(anim); c.style.display='none'; }, 5000);
     }
   </script>
 </body>

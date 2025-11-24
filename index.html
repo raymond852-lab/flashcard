@@ -11,40 +11,36 @@
   .btn {padding:6vw 18vw;margin:6vh auto;font-size:9vw;border:none;border-radius:30px;color:white;box-shadow:0 12px 35px rgba(0,0,0,0.4);cursor:pointer;}
   #studyBtn {background:#26A69A;}
   #dictateBtn {background:#FF9800;}
-
   #game {display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:#B2EBF2;padding-top:10vh;text-align:center;}
-  #score {position:fixed;top:8vh;background:rgba(0,77,64,0.95);color:white;padding:12px 30px;border-radius:25px;font-size:6vw;font-weight:bold;}
+  /* Removed #score styles as scoring is no longer automatic */
   #card {background:#009688;color:white;width:88vw;height:48vh;margin:8vh auto 4vh;border-radius:40px;display:flex;align-items:center;justify-content:center;font-size:11vw;font-weight:bold;box-shadow:0 20px 50px rgba(0,0,0,0.4);padding: 20px; box-sizing: border-box; word-wrap: break-word;}
   #card.sentence {font-size:7vw; line-height: 1.2;}
-  #input {width:88vw;padding:5vw;font-size:8vw;border-radius:30px;border:none;text-align:center;margin:4vh 0;box-shadow:inset 0 6px 20px rgba(0,0,0,0.2);}
+  /* Removed #input styles */
   #bottom {position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);background:rgba(0,77,64,0.98);border-radius:40px;padding:3vh 6vw;display:flex;gap:8vw;box-shadow:0 15px 40px rgba(0,0,0,0.5); z-index: 100;}
   #bottom button {background:transparent;color:white;border:none;font-size:7vw;font-weight:bold;cursor:pointer;}
+  #bottom button.hidden {display:none;} /* New: Hide buttons when not needed */
   canvas {position:fixed;top:0;left:0;pointer-events:none;z-index:999;}
 </style>
 </head>
 <body>
-
 <div id="landing">
   <h1>P1 Dictation</h1>
   <button class="btn" id="studyBtn">Study Mode</button>
   <button class="btn" id="dictateBtn">Dictation Mode</button>
 </div>
-
 <div id="game">
-  <div id="score">0 / 0</div>
+  <!-- Removed #score div as no automatic scoring -->
   <div id="card">Ready</div>
-  <input id="input" placeholder="Type here" autocomplete="off" spellcheck="false">
+  <!-- Removed <input id="input"> -->
   <div id="bottom">
-    <button onclick="play()">Play</button>
-    <button onclick="check()">Check</button>
+    <button id="playBtn" onclick="play()">Play</button>
+    <button id="revealBtn" onclick="reveal()">Reveal</button>
     <button onclick="next()">Next</button>
     <button onclick="location.reload()">Menu</button>
   </div>
 </div>
-
 <canvas id="confetti"></canvas>
 <audio id="clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
-
 <script>
 // ←←← ONLY CHANGE THIS LIST EVERY WEEK
 const words = [
@@ -54,81 +50,55 @@ const words = [
   "She has two sharpeners.","Tom has three rulers and six erasers.",
   "We have three pens.","They have five school bags."
 ];
-
 let i = -1; // Starts at -1 so the first 'next()' sets it to 0
-let correct = 0; 
-let total = 0; 
 let mode = "";
-
+// Removed correct and total variables as no automatic scoring
 // Buttons
 document.getElementById('studyBtn').onclick = () => start('study');
 document.getElementById('dictateBtn').onclick = () => start('dictate');
-
-// Enable "Enter" key to check answer
-document.getElementById('input').addEventListener("keypress", function(event) {
-  if (event.key === "Enter") {
-    check();
-  }
-});
-
+// Removed keypress listener for input
 function start(m) {
   mode = m;
   document.getElementById('landing').style.display = 'none';
   document.getElementById('game').style.display = 'block';
   i = -1; // Reset index
-  correct = total = 0;
-  document.getElementById('score').textContent = '0 / 0';
-  document.getElementById('input').value = '';
+  // Removed correct = total = 0 and score update
+  // Removed input.value = ''
+  // New: Toggle button visibility based on mode
+  if (mode === 'study') {
+    document.getElementById('playBtn').classList.add('hidden');
+    document.getElementById('revealBtn').classList.add('hidden');
+  } else {
+    document.getElementById('playBtn').classList.remove('hidden');
+    document.getElementById('revealBtn').classList.remove('hidden');
+  }
   next();
 }
-
 function play() {
   const utter = new SpeechSynthesisUtterance(words[i]);
   utter.lang = 'en-GB'; // British English
-  utter.rate = 0.7;     // Slower speed for P1 kids
+  utter.rate = 0.7; // Slower speed for P1 kids
   speechSynthesis.cancel();
   speechSynthesis.speak(utter);
-
-  // Focus input immediately after clicking play so they can type
-  document.getElementById('input').focus();
-
+  // Removed input.focus()
   if (mode === 'dictate') {
     document.getElementById('card').textContent = '(listening…)';
     document.getElementById('card').style.background = '#004D40';
   }
 }
-
-function check() {
-  if (!document.getElementById('input').value.trim()) return;
-  
-  // Prevent checking twice if already correct (optional safety)
-  if (document.getElementById('card').textContent === 'Correct!') return;
-
-  total++;
-  const typed = document.getElementById('input').value.trim();
-  
-  if (typed.toLowerCase() === words[i].toLowerCase()) {
-    // Answer is Correct
-    correct++;
-    document.getElementById('card').textContent = 'Correct!';
-    document.getElementById('card').style.background = '#2E7D32';
-    document.getElementById('clap').play();
-  } else {
-    // Answer is Wrong
-    document.getElementById('card').textContent = words[i]; // Show the answer
-    document.getElementById('card').style.background = '#C62828';
-  }
-  
-  document.getElementById('score').textContent = correct + ' / ' + total;
-  
-  if (correct === words.length) setTimeout(confetti, 800);
+// Removed check() function entirely
+// New reveal() function to show the answer for paper-based self-checking
+function reveal() {
+  document.getElementById('card').textContent = words[i];
+  document.getElementById('card').className = words[i].length > 10 ? 'card sentence' : 'card';
+  document.getElementById('card').style.background = '#009688'; // Neutral color for reveal
+  document.getElementById('clap').play(); // Optional celebratory sound on reveal
 }
-
 function next() {
   i = (i + 1) % words.length; // Move to next word
-  
-  document.getElementById('input').value = ''; // Clear box
-  
+ 
+  // Removed input.value = ''
+ 
   if (mode === 'study') {
     document.getElementById('card').textContent = words[i];
     document.getElementById('card').className = words[i].length > 10 ? 'card sentence' : 'card';
@@ -138,9 +108,8 @@ function next() {
     document.getElementById('card').style.background = '#009688';
     document.getElementById('card').className = 'card';
   }
-  document.getElementById('input').focus();
+  // Removed input.focus()
 }
-
 function confetti() {
   const c = document.getElementById('confetti'); c.style.display='block';
   c.width = innerWidth; c.height = innerHeight;
@@ -151,6 +120,8 @@ function confetti() {
   const anim = setInterval(()=>{ctx.clearRect(0,0,c.width,c.height);p.forEach(o=>{o.y+=o.s;if(o.y>c.height)o.y=-30;ctx.fillStyle=o.c;ctx.fillRect(o.x+Math.sin(t)*15,o.y,14,14);});t+=0.1;},20);
   setTimeout(()=>{clearInterval(anim);c.style.display='none';},5000);
 }
+// Optional: Trigger confetti after cycling through all items once
+// You can call confetti() in next() when (i === 0 && some session flag), but kept simple for now
 </script>
 </body>
 </html>

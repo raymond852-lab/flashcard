@@ -5,13 +5,29 @@
 <title>Daddy's Real Dictation</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-  body {margin:0;background:linear-gradient(#B2EBF2,#81D4FA);font-family:-apple-system,sans-serif;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#004D40;}
+  body {margin:0;background:linear-gradient(#B2EBF2,#81D4FA);font-family:-apple-system,sans-serif;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#004D40;overflow:hidden;}
   h1 {font-size:10vw;margin-bottom:8vh;}
-  #startBtn {padding:6vw 20vw;font-size:9vw;border:none;border-radius:30px;background:#FF9800;color:white;box-shadow:0 15px 40px rgba(0,0,0,0.4);cursor:pointer;}
+  
+  /* Start Button Styling */
+  #startBtn {padding:6vw 20vw;font-size:9vw;border:none;border-radius:50px;background:#FF9800;color:white;box-shadow:0 10px 25px rgba(0,0,0,0.3);cursor:pointer;transition:transform 0.1s;}
+  #startBtn:active {transform:scale(0.95);}
+
   #main {display:none;flex-direction:column;align-items:center;justify-content:center;height:100vh;width:100vw;background:#B2EBF2;}
-  #bigText {font-size:18vw;font-weight:bold;margin:10vh 0;min-height:30vh;}
-  #secret {width:80vw;padding:4vw;font-size:7vw;border-radius:25px;border:none;text-align:center;margin:8vh 0;opacity:0.9;}
-  #buttons button {margin:3vw;padding:4vw 10vw;font-size:8vw;border:none;border-radius:25px;background:#004D40;color:white;cursor:pointer;}
+  
+  /* Adjusted text size for better fit */
+  #bigText {font-size:15vw;font-weight:bold;margin:5vh 0;min-height:20vh;line-height:1.1;}
+  
+  /* Changed to Password styling so kid can't peek */
+  #secret {width:80vw;padding:4vw;font-size:7vw;border-radius:25px;border:2px solid #00695C;text-align:center;margin:4vh 0;opacity:0.9;}
+  
+  #buttons {display:flex; flex-wrap:wrap; justify-content:center;}
+  #buttons button {margin:2vw;padding:4vw 6vw;font-size:6vw;border:none;border-radius:20px;background:#004D40;color:white;cursor:pointer;box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+  #buttons button:active {transform: translateY(2px);}
+
+  /* Utility classes for feedback colors */
+  .success-text { color: #2E7D32 !important; }
+  .fail-text { color: #C62828 !important; }
+
   canvas {position:fixed;top:0;left:0;pointer-events:none;z-index:999;}
 </style>
 </head>
@@ -19,88 +35,136 @@
 
 <div id="start">
   <h1>Real Dictation<br>with Daddy</h1>
-  <button id="startBtn">Start</button>
+  <button id="startBtn">Start Game</button>
 </div>
 
 <div id="main">
-  <div id="bigText">Press Play when ready</div>
-  <input id="secret" placeholder="Daddy types correct answer here (secret)" autocomplete="off">
+  <div id="bigText">Ready?</div>
+  
+  <input id="secret" type="password" placeholder="Daddy types here..." autocomplete="off">
+  
   <div id="buttons">
-    <button onclick="playAgain()">Play Again</button>
-    <button onclick="check()">Check</button>
-    <button onclick="next()">Next Word</button>
+    <button onclick="speakWord()">🔊 Say It</button>
+    <button onclick="check()" style="background:#FF9800">✔ Check</button>
+    <button onclick="next()">➡ Next</button>
   </div>
 </div>
 
 <canvas id="confetti"></canvas>
+
 <audio id="clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 <audio id="win" src="https://www.soundjay.com/misc/success-1.mp3"></audio>
 
 <script>
-  let correct = 0, total = 0, currentAnswer = "";
+  let correctCount = 0;
 
+  // Start the App
   document.getElementById('startBtn').onclick = () => {
     document.getElementById('start').style.display = 'none';
     document.getElementById('main').style.display = 'flex';
+    document.getElementById('secret').focus();
   };
 
-  function playAgain() {
-    document.getElementById('bigText').textContent = 'Listening…';
-    document.getElementById('secret').focus();
-    // You can speak aloud here — or let the British lady speak if you type the word first
-    if (currentAnswer) {
-      const u = new SpeechSynthesisUtterance(currentAnswer);
-      u.lang = 'en-GB';
-      speechSynthesis.speak(u);
+  // FIX 1: Read directly from the input box so it works immediately
+  function speakWord() {
+    const textToRead = document.getElementById('secret').value;
+    
+    if (!textToRead) {
+        document.getElementById('secret').placeholder = "Type a word first!";
+        return;
     }
+
+    // Make the browser speak
+    const u = new SpeechSynthesisUtterance(textToRead);
+    u.lang = 'en-GB'; // British accent
+    u.rate = 0.9;     // Slightly slower for dictation
+    speechSynthesis.speak(u);
+    
+    document.getElementById('bigText').textContent = 'Listening...';
+    document.getElementById('secret').focus();
   }
 
   function check() {
-    total++;
     const typedByDaddy = document.getElementById('secret').value.trim();
-    if (!typedByDaddy) { alert("Daddy, please type the correct answer first!"); return; }
+    
+    if (!typedByDaddy) { 
+        alert("Daddy, please type the word first!"); 
+        return; 
+    }
 
-    currentAnswer = typedByDaddy;
-    // Here you look at your son’s paper and decide:
-    const sonIsCorrect = confirm("Is his writing correct? Click OK = Correct, Cancel = Wrong");
+    // Confirm Dialog
+    const sonIsCorrect = confirm(`Did he write "${typedByDaddy}" correctly?`);
+
+    const display = document.getElementById('bigText');
 
     if (sonIsCorrect) {
-      correct++;
-      document.getElementById('bigText').innerHTML = 'Correct!<br>Super Star!';
-      document.getElementById('bigText').style.color = '#2E7D32';
+      correctCount++;
+      display.innerHTML = 'Correct!<br>Super Star!';
+      display.className = 'success-text';
+      
       document.getElementById('clap').play();
-      if (correct % 5 === 0) starRain();
-      if (correct === total) setTimeout(victory, 1000);
+      
+      // Every 5 correct answers, big celebration
+      if (correctCount > 0 && correctCount % 5 === 0) {
+          victory();
+      } else {
+          starRain('#FFD700'); // Small gold rain for normal win
+      }
     } else {
-      document.getElementById('bigText').innerHTML = 'Oops!<br>Correct answer:<br><b>' + currentAnswer + '</b>';
-      document.getElementById('bigText').style.color = '#C62828';
+      // Show the correct spelling if they got it wrong
+      display.innerHTML = 'Oops!<br>It was:<br>' + typedByDaddy;
+      display.className = 'fail-text';
     }
   }
 
   function next() {
     document.getElementById('secret').value = '';
-    currentAnswer = '';
-    document.getElementById('bigText').textContent = 'Press Play when ready';
-    document.getElementById('bigText').style.color = '#004D40';
+    document.getElementById('bigText').textContent = 'Next Word';
+    document.getElementById('bigText').className = ''; // Reset color
+    document.getElementById('secret').focus();
   }
 
-  function starRain() { /* same as before */ confettiBurst('#FFD700'); }
+  // Visual Effects
+  function starRain(col) { confettiBurst(col); }
   function victory() { document.getElementById('win').play(); confettiBurst(); }
 
   function confettiBurst(col = null) {
-    const c = document.getElementById('confetti'); c.style.display='block';
-    c.width = innerWidth; c.height = innerHeight;
+    const c = document.getElementById('confetti'); 
+    c.style.display='block';
+    c.width = window.innerWidth; 
+    c.height = window.innerHeight;
+    
     const ctx = c.getContext('2d');
-    const cols = col ? [col] : ['#f00','#ff0','#0f0','#0ff','#f0f'];
+    const cols = col ? [col] : ['#f44336','#FFEB3B','#4CAF50','#2196F3','#9C27B0'];
     const p = [];
-    for(let j=0;j<400;j++) p.push({x:innerWidth/2,y:innerHeight/2,c:cols[j%cols.length],a:Math.random()*Math.PI*2,v:Math.random()*10+8});
+    
+    for(let j=0; j<300; j++) {
+        p.push({
+            x: c.width/2,
+            y: c.height/2,
+            c: cols[j % cols.length],
+            a: Math.random() * Math.PI * 2,
+            v: Math.random() * 15 + 5,
+            s: Math.random() * 15 + 5 // Size
+        });
+    }
+    
     let t=0;
     const anim = setInterval(()=>{
       ctx.clearRect(0,0,c.width,c.height);
-      p.forEach(o=>{o.x+=Math.cos(o.a)*o.v; o.y+=Math.sin(o.a)*o.v+2; if(o.y>c.height)o.y=-50;
-        ctx.fillStyle=o.c; ctx.fillRect(o.x,o.y,18,18);});
-      if(++t>100) {clearInterval(anim); c.style.display='none';}
-    },20);
+      p.forEach(o => {
+          o.x += Math.cos(o.a) * o.v; 
+          o.y += Math.sin(o.a) * o.v + 3; // Gravity
+          o.v *= 0.95; // Air resistance slows them down
+          
+          ctx.fillStyle = o.c; 
+          ctx.fillRect(o.x, o.y, o.s, o.s);
+      });
+      if(++t>80) {
+          clearInterval(anim); 
+          c.style.display='none';
+      }
+    }, 30);
   }
 </script>
 </body>

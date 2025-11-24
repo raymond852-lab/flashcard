@@ -1,146 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>P1 Dictation Fun</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-    * {margin:0;padding:0;box-sizing:border-box;}
-    body {font-family:-apple-system,system-ui,sans-serif;background:linear-gradient(135deg,#B2EBF2,#81D4FA);height:100vh;width:100vw;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-    
-    /* Landing Page */
-    #landing {text-align:center;width:100%;padding:10vw;}
-    h1 {font-size:11vw;color:#004D40;margin-bottom:10vh;text-shadow:0 4px 15px rgba(0,0,0,0.2);}
-    .btn {display:block;width:78vw;max-width:420px;margin:7vh auto;padding:5vw;font-size:9vw;font-weight:bold;color:white;border:none;border-radius:28px;
-          box-shadow:0 12px 30px rgba(0,0,0,0.3);cursor:pointer;transition:all 0.2s;}
-    #studyBtn {background:#26A69A;}
-    #studyBtn:active {background:#00695C;transform:translateY(4px);}
-    #dictateBtn {background:#FF9800;}
-    #dictateBtn:active {background:#E65100;transform:translateY(4px);}
-
-    /* Game Screen */
-    #game {display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#B2EBF2;flex-direction:column;align-items:center;padding-top:10vh;}
-    #score {position:fixed;top:8vh;background:rgba(0,77,64,0.95);color:white;padding:12px 30px;border-radius:25px;font-size:5.5vw;font-weight:bold;z-index:10;}
-    #card {background:#009688;color:white;width:88vw;height:50vh;border-radius:40px;box-shadow:0 20px 50px rgba(0,0,0,0.35);
-           display:flex;align-items:center;justify-content:center;text-align:center;font-size:11vw;font-weight:bold;padding:6vw;line-height:1.4;}
-    #card.sentence {font-size:7.5vw;}
-    #input {margin:7vh 0 5vh;width:88vw;padding:4.5vw;font-size:7vw;border-radius:30px;border:none;text-align:center;outline:none;
-            box-shadow:inset 0 6px 20px rgba(0,0,0,0.2);}
-
-    /* Clean bottom button bar */
-    #bar {position:fixed;bottom:5vh;left:50%;transform:translateX(-50%);background:rgba(0,77,64,0.98);border-radius:35px;
-          padding:2.5vh 5vw;display:flex;gap:6vw;box-shadow:0 15px 40px rgba(0,0,0,0.4);z-index:20;}
-    #bar button {background:transparent;color:white;border:none;font-size:5.8vw;font-weight:bold;cursor:pointer;padding:1vh 0;min-width:50px;}
-
-    canvas
-
-    canvas {position:fixed;top:0;left:0;pointer-events:none;z-index:999;}
-  </style>
+<meta charset="utf-8">
+<title>Dictation with Daddy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+  body {margin:0;background:#B2EBF2;font-family:-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;}
+  #landing {text-align:center;}
+  h1 {font-size:11vw;color:#004D40;margin-bottom:10vh;}
+  .btn {padding:5vw 15vw;margin:5vh;font-size:9vw;border:none;border-radius:25px;color:white;cursor:pointer;}
+  #study {background:#26A69A;}
+  #dictate {background:#FF9800;}
+  #game {display:none;text-align:center;padding:5vw;}
+  #input {width:85vw;padding:5vw;font-size:8vw;border-radius:25px;border:none;text-align:center;margin:8vh 0;}
+  #feedback {font-size:9vw;font-weight:bold;margin:8vh 0;}
+  #buttons button {padding:3vw 8vw;margin:2vw;font-size:7vw;border:none;border-radius:20px;background:#004D40;color:white;cursor:pointer;}
+</style>
 </head>
 <body>
 
-  <!-- Landing -->
-  <div id="landing">
-    <h1>P1 Dictation</h1>
-    <button class="btn" id="studyBtn">Study Mode</button>
-    <button class="btn" id="dictateBtn">Dictate Mode</button>
+<div id="landing">
+  <h1>Dictation Time!</h1>
+  <button class="btn" id="dictate">Dictate Mode</button>
+</div>
+
+<div id="game">
+  <h2 style="margin:10vh 0 5vh;font-size:8vw;color:#004D40;">Type what Daddy says</h2>
+  <input id="input" placeholder="Type here" autocomplete="off">
+  <div id="feedback"></div>
+  <div id="buttons">
+    <button onclick="check()">Check</button>
+    <button onclick="next()">Next</button>
+    <button onclick="location.reload()">Back to Start</button>
   </div>
+</div>
 
-  <!-- Game -->
-  <div id="game">
-    <div id="score">Score: 0/0</div>
-    <div id="card"></div>
-    <input id="input" placeholder="Type here..." autocomplete="off">
-    <div id="bar">
-      <button onclick="speak()">Play</button>
-      <button onclick="check()">Check</button>
-      <button onclick="next()">Next</button>
-      <button onclick="location.reload()">Menu</button>
-    </div>
-  </div>
+<audio id="clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
+<canvas id="confetti"></canvas>
 
-  <canvas id="confetti"></canvas>
-  <audio id="clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
+<script>
+  let correct = 0, total = 0;
+  let lastAnswer = "";
 
-  <script>
-    // ←←← CHANGE WORDS HERE EVERY WEEK (your son's 10 Dec list already loaded)
-    const words = `o
-s
-m
-h
-one
-four
-nine
-they
-what
-has
-have
-and
-play
-our
-This is a desk.
-This is a bookshelf.
-This is a computer.
-She has two sharpeners.
-Tom has three rulers and six erasers.
-We have three pens.
-They have five school bags.`.trim().split('\n').map(s=>s.trim());
+  document.getElementById('dictate').onclick = () => {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('game').style.display = 'block';
+    document.getElementById('input').focus();
+  };
 
-    let i = 0, correct = 0, total = 0;
-    const card = document.getElementById('card');
-    const input = document.getElementById('input');
-    const score = document.getElementById('score');
+  function check() {
+    const typed = document.getElementById('input').value.trim();
+    if (typed === "") return;
 
-    document.getElementById('studyBtn').onclick = () => start('study');
-    document.getElementById('dictateBtn').onclick = () => start('dictate');
-
-    function start(mode) {
-      document.getElementById('landing').style.display = 'none';
-      document.getElementById('game').style.display = 'flex';
-      i = correct = total = 0;
-      score.textContent = 'Score: 0/0';
-      input.style.display = (mode==='study') ? 'none' : 'block';
-      document.querySelector('#bar button:nth-child(2)').style.display = (mode==='study') ? 'none' : 'block';
-      show();
+    total++;
+    if (typed.toLowerCase() === lastAnswer.toLowerCase()) {
+      correct++;
+      document.getElementById('feedback').innerHTML = 'Correct! Well done!';
+      document.getElementById('feedback').style.color = 'green';
+      document.getElementById('clap').play();
+    } else {
+      document.getElementById('feedback').innerHTML = 'Wrong<br>The answer is: <b>' + lastAnswer + '</b>';
+      document.getElementById('feedback').style.color = 'red';
     }
+    if (correct === total && total > 0) setTimeout(confetti, 600);
+  }
 
-    function show() {
-      card.textContent = words[i];
-      card.className = words[i].includes('.') ? 'card sentence' : 'card';
-      input.value = '';
-      if (input.style.display === 'block') { input.focus(); speak(); }
-    }
+  function next() {
+    lastAnswer = prompt("Daddy, type the CORRECT answer here (your son won't see this)", "");
+    if (lastAnswer === null) lastAnswer = "";
+    document.getElementById('input').value = "";
+    document.getElementById('feedback').innerHTML = "";
+    document.getElementById('input').focus();
+  }
 
-    function next() { i = (i + 1) % words.length; show(); }
-    function speak() { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(words[i])); }
-    
-    function check() {
-      total++;
-      if (input.value.trim().toLowerCase() === words[i].toLowerCase()) {
-        correct++;
-        score.textContent = `Score: ${correct}/${total} Correct!`;
-        document.getElementById('clap').play();
-        if (correct === words.length) setTimeout(confetti, 800);
-      } else {
-        score.textContent = `Score: ${correct}/${total} → ${words[i]}`;
+  function confetti() {
+    const c = document.getElementById('confetti');
+    c.style.display = 'block';
+    c.width = innerWidth; c.height = innerHeight;
+    const ctx = c.getContext('2d');
+    const colors = ['#f00','#0f0','#00f','#ff0','#f0f'];
+    let t = 0;
+    const anim = setInterval(() => {
+      ctx.clearRect(0,0,c.width,c.height);
+      for(let i=0;i<300;i++){
+        const x = (i*20 + t*3) % c.width;
+        const y = (i*15 + t*2) % c.height;
+        ctx.fillStyle = colors[i%5];
+        ctx.fillRect(x, y, 15, 15);
       }
-      card.style.display = 'flex';
-    }
-
-    function confetti() {
-      const c = document.getElementById('confetti'); c.style.display = 'block';
-      c.width = innerWidth; c.height = innerHeight;
-      const ctx = c.getContext('2d');
-      const p = [];
-      for(let j=0; j<400; j++) p.push({x:Math.random()*c.width, y:Math.random()*c.height-100, c:`hsl(${Math.random()*360},100%,50%)`, s:Math.random()*10+5});
-      let t=0;
-      const anim = setInterval(() => {
-        ctx.clearRect(0,0,c.width,c.height);
-        p.forEach(o=>{ o.y += o.s; if(o.y>c.height) o.y=-20; ctx.fillStyle=o.c; ctx.fillRect(o.x+Math.sin(t)*15,o.y,14,14); });
-        t+=0.1;
-      }, 20);
-      setTimeout(()=>{ clearInterval(anim); c.style.display='none'; }, 5000);
-    }
-  </script>
+      t++;
+    }, 30);
+    setTimeout(() => {clearInterval(anim); c.style.display='none';}, 4000);
+  }
+</script>
 </body>
 </html>

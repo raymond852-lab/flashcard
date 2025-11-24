@@ -2,170 +2,155 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Daddy's Real Dictation</title>
+<title>P1 Dictation – Perfect Version</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-  body {margin:0;background:linear-gradient(#B2EBF2,#81D4FA);font-family:-apple-system,sans-serif;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#004D40;overflow:hidden;}
-  h1 {font-size:10vw;margin-bottom:8vh;}
-  
-  /* Start Button Styling */
-  #startBtn {padding:6vw 20vw;font-size:9vw;border:none;border-radius:50px;background:#FF9800;color:white;box-shadow:0 10px 25px rgba(0,0,0,0.3);cursor:pointer;transition:transform 0.1s;}
-  #startBtn:active {transform:scale(0.95);}
+  body {margin:0;background:linear-gradient(#B2EBF2,#81D4FA);font-family:-apple-system,sans-serif;height:100vh;width:100vw;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  #landing {text-align:center;width:100%;}
+  h1 {font-size:11vw;color:#004D40;margin-bottom:8vh;}
+  .btn {padding:6vw 18vw;margin:6vh auto;font-size:9vw;border:none;border-radius:30px;color:white;box-shadow:0 12px 35px rgba(0,0,0,0.4);cursor:pointer;}
+  #studyBtn {background:#26A69A;}
+  #dictateBtn {background:#FF9800;}
 
-  #main {display:none;flex-direction:column;align-items:center;justify-content:center;height:100vh;width:100vw;background:#B2EBF2;}
-  
-  /* Adjusted text size for better fit */
-  #bigText {font-size:15vw;font-weight:bold;margin:5vh 0;min-height:20vh;line-height:1.1;}
-  
-  /* Changed to Password styling so kid can't peek */
-  #secret {width:80vw;padding:4vw;font-size:7vw;border-radius:25px;border:2px solid #00695C;text-align:center;margin:4vh 0;opacity:0.9;}
-  
-  #buttons {display:flex; flex-wrap:wrap; justify-content:center;}
-  #buttons button {margin:2vw;padding:4vw 6vw;font-size:6vw;border:none;border-radius:20px;background:#004D40;color:white;cursor:pointer;box-shadow:0 5px 15px rgba(0,0,0,0.2);}
-  #buttons button:active {transform: translateY(2px);}
-
-  /* Utility classes for feedback colors */
-  .success-text { color: #2E7D32 !important; }
-  .fail-text { color: #C62828 !important; }
-
+  #game {display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:#B2EBF2;padding-top:10vh;text-align:center;}
+  #score {position:fixed;top:8vh;background:rgba(0,77,64,0.95);color:white;padding:12px 30px;border-radius:25px;font-size:6vw;font-weight:bold;}
+  #card {background:#009688;color:white;width:88vw;height:48vh;margin:8vh auto 4vh;border-radius:40px;display:flex;align-items:center;justify-content:center;font-size:11vw;font-weight:bold;box-shadow:0 20px 50px rgba(0,0,0,0.4);padding: 20px; box-sizing: border-box; word-wrap: break-word;}
+  #card.sentence {font-size:7vw; line-height: 1.2;}
+  #input {width:88vw;padding:5vw;font-size:8vw;border-radius:30px;border:none;text-align:center;margin:4vh 0;box-shadow:inset 0 6px 20px rgba(0,0,0,0.2);}
+  #bottom {position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);background:rgba(0,77,64,0.98);border-radius:40px;padding:3vh 6vw;display:flex;gap:8vw;box-shadow:0 15px 40px rgba(0,0,0,0.5); z-index: 100;}
+  #bottom button {background:transparent;color:white;border:none;font-size:7vw;font-weight:bold;cursor:pointer;}
   canvas {position:fixed;top:0;left:0;pointer-events:none;z-index:999;}
 </style>
 </head>
 <body>
 
-<div id="start">
-  <h1>Real Dictation<br>with Daddy</h1>
-  <button id="startBtn">Start Game</button>
+<div id="landing">
+  <h1>P1 Dictation</h1>
+  <button class="btn" id="studyBtn">Study Mode</button>
+  <button class="btn" id="dictateBtn">Dictation Mode</button>
 </div>
 
-<div id="main">
-  <div id="bigText">Ready?</div>
-  
-  <input id="secret" type="password" placeholder="Daddy types here..." autocomplete="off">
-  
-  <div id="buttons">
-    <button onclick="speakWord()">🔊 Say It</button>
-    <button onclick="check()" style="background:#FF9800">✔ Check</button>
-    <button onclick="next()">➡ Next</button>
+<div id="game">
+  <div id="score">0 / 0</div>
+  <div id="card">Ready</div>
+  <input id="input" placeholder="Type here" autocomplete="off" spellcheck="false">
+  <div id="bottom">
+    <button onclick="play()">Play</button>
+    <button onclick="check()">Check</button>
+    <button onclick="next()">Next</button>
+    <button onclick="location.reload()">Menu</button>
   </div>
 </div>
 
 <canvas id="confetti"></canvas>
-
 <audio id="clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
-<audio id="win" src="https://www.soundjay.com/misc/success-1.mp3"></audio>
 
 <script>
-  let correctCount = 0;
+// ←←← ONLY CHANGE THIS LIST EVERY WEEK
+const words = [
+  "o","s","m","h",
+  "one","four","nine","they","what","has","have","and","play","our",
+  "This is a desk.","This is a bookshelf.","This is a computer.",
+  "She has two sharpeners.","Tom has three rulers and six erasers.",
+  "We have three pens.","They have five school bags."
+];
 
-  // Start the App
-  document.getElementById('startBtn').onclick = () => {
-    document.getElementById('start').style.display = 'none';
-    document.getElementById('main').style.display = 'flex';
-    document.getElementById('secret').focus();
-  };
+let i = -1; // Starts at -1 so the first 'next()' sets it to 0
+let correct = 0; 
+let total = 0; 
+let mode = "";
 
-  // FIX 1: Read directly from the input box so it works immediately
-  function speakWord() {
-    const textToRead = document.getElementById('secret').value;
-    
-    if (!textToRead) {
-        document.getElementById('secret').placeholder = "Type a word first!";
-        return;
-    }
+// Buttons
+document.getElementById('studyBtn').onclick = () => start('study');
+document.getElementById('dictateBtn').onclick = () => start('dictate');
 
-    // Make the browser speak
-    const u = new SpeechSynthesisUtterance(textToRead);
-    u.lang = 'en-GB'; // British accent
-    u.rate = 0.9;     // Slightly slower for dictation
-    speechSynthesis.speak(u);
-    
-    document.getElementById('bigText').textContent = 'Listening...';
-    document.getElementById('secret').focus();
+// Enable "Enter" key to check answer
+document.getElementById('input').addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    check();
   }
+});
 
-  function check() {
-    const typedByDaddy = document.getElementById('secret').value.trim();
-    
-    if (!typedByDaddy) { 
-        alert("Daddy, please type the word first!"); 
-        return; 
-    }
+function start(m) {
+  mode = m;
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  i = -1; // Reset index
+  correct = total = 0;
+  document.getElementById('score').textContent = '0 / 0';
+  document.getElementById('input').value = '';
+  next();
+}
 
-    // Confirm Dialog
-    const sonIsCorrect = confirm(`Did he write "${typedByDaddy}" correctly?`);
+function play() {
+  const utter = new SpeechSynthesisUtterance(words[i]);
+  utter.lang = 'en-GB'; // British English
+  utter.rate = 0.7;     // Slower speed for P1 kids
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
 
-    const display = document.getElementById('bigText');
+  // Focus input immediately after clicking play so they can type
+  document.getElementById('input').focus();
 
-    if (sonIsCorrect) {
-      correctCount++;
-      display.innerHTML = 'Correct!<br>Super Star!';
-      display.className = 'success-text';
-      
-      document.getElementById('clap').play();
-      
-      // Every 5 correct answers, big celebration
-      if (correctCount > 0 && correctCount % 5 === 0) {
-          victory();
-      } else {
-          starRain('#FFD700'); // Small gold rain for normal win
-      }
-    } else {
-      // Show the correct spelling if they got it wrong
-      display.innerHTML = 'Oops!<br>It was:<br>' + typedByDaddy;
-      display.className = 'fail-text';
-    }
+  if (mode === 'dictate') {
+    document.getElementById('card').textContent = '(listening…)';
+    document.getElementById('card').style.background = '#004D40';
   }
+}
 
-  function next() {
-    document.getElementById('secret').value = '';
-    document.getElementById('bigText').textContent = 'Next Word';
-    document.getElementById('bigText').className = ''; // Reset color
-    document.getElementById('secret').focus();
+function check() {
+  if (!document.getElementById('input').value.trim()) return;
+  
+  // Prevent checking twice if already correct (optional safety)
+  if (document.getElementById('card').textContent === 'Correct!') return;
+
+  total++;
+  const typed = document.getElementById('input').value.trim();
+  
+  if (typed.toLowerCase() === words[i].toLowerCase()) {
+    // Answer is Correct
+    correct++;
+    document.getElementById('card').textContent = 'Correct!';
+    document.getElementById('card').style.background = '#2E7D32';
+    document.getElementById('clap').play();
+  } else {
+    // Answer is Wrong
+    document.getElementById('card').textContent = words[i]; // Show the answer
+    document.getElementById('card').style.background = '#C62828';
   }
+  
+  document.getElementById('score').textContent = correct + ' / ' + total;
+  
+  if (correct === words.length) setTimeout(confetti, 800);
+}
 
-  // Visual Effects
-  function starRain(col) { confettiBurst(col); }
-  function victory() { document.getElementById('win').play(); confettiBurst(); }
-
-  function confettiBurst(col = null) {
-    const c = document.getElementById('confetti'); 
-    c.style.display='block';
-    c.width = window.innerWidth; 
-    c.height = window.innerHeight;
-    
-    const ctx = c.getContext('2d');
-    const cols = col ? [col] : ['#f44336','#FFEB3B','#4CAF50','#2196F3','#9C27B0'];
-    const p = [];
-    
-    for(let j=0; j<300; j++) {
-        p.push({
-            x: c.width/2,
-            y: c.height/2,
-            c: cols[j % cols.length],
-            a: Math.random() * Math.PI * 2,
-            v: Math.random() * 15 + 5,
-            s: Math.random() * 15 + 5 // Size
-        });
-    }
-    
-    let t=0;
-    const anim = setInterval(()=>{
-      ctx.clearRect(0,0,c.width,c.height);
-      p.forEach(o => {
-          o.x += Math.cos(o.a) * o.v; 
-          o.y += Math.sin(o.a) * o.v + 3; // Gravity
-          o.v *= 0.95; // Air resistance slows them down
-          
-          ctx.fillStyle = o.c; 
-          ctx.fillRect(o.x, o.y, o.s, o.s);
-      });
-      if(++t>80) {
-          clearInterval(anim); 
-          c.style.display='none';
-      }
-    }, 30);
+function next() {
+  i = (i + 1) % words.length; // Move to next word
+  
+  document.getElementById('input').value = ''; // Clear box
+  
+  if (mode === 'study') {
+    document.getElementById('card').textContent = words[i];
+    document.getElementById('card').className = words[i].length > 10 ? 'card sentence' : 'card';
+    document.getElementById('card').style.background = '#009688';
+  } else {
+    document.getElementById('card').textContent = 'Press Play';
+    document.getElementById('card').style.background = '#009688';
+    document.getElementById('card').className = 'card';
   }
+  document.getElementById('input').focus();
+}
+
+function confetti() {
+  const c = document.getElementById('confetti'); c.style.display='block';
+  c.width = innerWidth; c.height = innerHeight;
+  const ctx = c.getContext('2d');
+  const p = [];
+  for(let j=0;j<400;j++) p.push({x:Math.random()*c.width,y:Math.random()*c.height-100,c:`hsl(${Math.random()*360},100%,50%)`,s:Math.random()*10+6});
+  let t=0;
+  const anim = setInterval(()=>{ctx.clearRect(0,0,c.width,c.height);p.forEach(o=>{o.y+=o.s;if(o.y>c.height)o.y=-30;ctx.fillStyle=o.c;ctx.fillRect(o.x+Math.sin(t)*15,o.y,14,14);});t+=0.1;},20);
+  setTimeout(()=>{clearInterval(anim);c.style.display='none';},5000);
+}
 </script>
 </body>
 </html>

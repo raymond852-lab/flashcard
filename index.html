@@ -66,9 +66,11 @@ function start(m) {
   // Removed input.value = ''
   // New: Toggle button visibility based on mode
   if (mode === 'study') {
-    document.getElementById('playBtn').classList.add('hidden');
+    // Keep Play visible, hide only Reveal
+    document.getElementById('playBtn').classList.remove('hidden');
     document.getElementById('revealBtn').classList.add('hidden');
   } else {
+    // Dictation: Show both
     document.getElementById('playBtn').classList.remove('hidden');
     document.getElementById('revealBtn').classList.remove('hidden');
   }
@@ -85,6 +87,7 @@ function play() {
     document.getElementById('card').textContent = '(listening…)';
     document.getElementById('card').style.background = '#004D40';
   }
+  // In study mode, Play just speaks the visible word without changing card
 }
 // Removed check() function entirely
 // New reveal() function to show the answer for paper-based self-checking

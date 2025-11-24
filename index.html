@@ -1,356 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Funny Flashcards</title>
+  <meta charset="utf-8">
+  <title>P1 Dictation Fun – 10 Dec</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      background-color: #B2EBF2; /* Light Tiffany blue background */
-    }
-    #landingPage {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2vh;
-    }
-    #studyBtn, #dictateBtn, #backBtn {
-      padding: 2vh 4vw;
-      font-size: 5vw;
-      border: none;
-      border-radius: 1vh;
-      background-color: #26A69A; /* Darker Tiffany blue button */
-      color: white;
-      cursor: pointer;
-    }
-    #studyBtn:hover, #dictateBtn:hover, #backBtn:hover {
-      background-color: #4DD0E1; /* Lighter Tiffany blue on hover */
-    }
-    .card {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #40C4B4; /* Tiffany blue card */
-      padding: 1vh;
-      border-radius: 2vh;
-      font-size: 10vw;
-      line-height: 1.1;
-      text-align: center;
-      width: 95vw;
-      height: 60vh;
-      box-sizing: border-box;
-      color: white;
-      border: 0.5vh solid #26A69A;
-      box-shadow: 0 0 1vh rgba(0, 0, 0, 0.1);
-      align-items: center;
-      justify-content: center;
-      overflow-wrap: break-word;
-    }
-    .card.sentence {
-      font-size: 6vw;
-    }
-    #nextBtn, #playBtn, #checkBtn {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 2vh 4vw;
-      font-size: 4vw;
-      border: none;
-      border-radius: 1vh;
-      background-color: #26A69A;
-      color: white;
-      cursor: pointer;
-      display: none;
-    }
-    #nextBtn {
-      bottom: 22vh;
-    }
-    #playBtn {
-      bottom: 15vh;
-    }
-    #checkBtn {
-      bottom: 8vh;
-    }
-    #backBtn {
-      bottom: 1vh;
-      display: none;
-    }
-    #nextBtn:hover, #playBtn:hover, #checkBtn:hover, #backBtn:hover {
-      background-color: #4DD0E1;
-    }
-    #dictationInput {
-      position: absolute;
-      bottom: 29vh;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80vw;
-      padding: 1vh;
-      font-size: 4vw;
-      border-radius: 1vh;
-      border: 0.5vh solid #26A69A;
-      display: none;
-    }
-    #feedback {
-      position: absolute;
-      top: 10vh;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 4vw;
-      color: #ffffff;
-      background-color: rgba(38, 166, 154, 0.8);
-      padding: 1vh 2vw;
-      border-radius: 1vh;
-      display: none;
-    }
-    #score {
-      position: absolute;
-      top: 5vh;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 4vw;
-      color: #ffffff;
-      background-color: rgba(38, 166, 154, 0.8);
-      padding: 0.5vh 1vw;
-      border-radius: 1vh;
-      display: none;
-    }
-    @media (orientation: landscape) {
-      .card {
-        font-size: 8vw;
-        width: 90vw;
-        height: 70vh;
-      }
-      .card.sentence {
-        font-size: 5vw;
-      }
-    }
-    @media (max-width: 600px) {
-      .card {
-        font-size: 8vw;
-      }
-      .card.sentence {
-        font-size: 4vw;
-      }
-      #studyBtn, #dictateBtn, #backBtn {
-        font-size: 6vw;
-      }
-      #nextBtn {
-        bottom: 25vh;
-      }
-      #playBtn {
-        bottom: 17vh;
-      }
-      #checkBtn {
-        bottom: 9vh;
-      }
-      #backBtn {
-        bottom: 1vh;
-      }
-      #dictationInput {
-        bottom: 33vh;
-        font-size: 5vw;
-      }
-      #feedback, #score {
-        font-size: 5vw;
-      }
-    }
+    body {margin:0;padding:0;height:100vh;width:100vw;overflow:hidden;background:#B2EBF2;font-family:sans-serif;}
+    #landing {position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:3vh;align-items:center;text-align:center;}
+    h1 {font-size:9vw;color:#26A69A;margin:0;}
+    button {padding:2.5vh 6vw;font-size:7vw;border:none;border-radius:2vh;background:#26A69A;color:white;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+    button:hover {background:#4DD0E1;transform:scale(1.05);transition:0.2s;}
+    .card {display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#40C4B4;padding:3vh;border-radius:3vh;
+           font-size:11vw;line-height:1.3;text-align:center;width:94vw;max-height:70vh;box-sizing:border-box;color:white;
+           display:flex;align-items:center;justify-content:center;border:1vh solid #26A69A;box-shadow:0 0 4vh rgba(0,0,0,0.3);}
+    .card.sentence {font-size:6.5vw;}
+    #input {position:absolute;bottom:28vh;left:50%;transform:translateX(-50%);width:88vw;padding:2.5vh;font-size:6vw;border-radius:2vh;
+            border:0.8vh solid #26A69A;display:none;}
+    #feedback,#score {position:absolute;left:50%;transform:translateX(-50%);padding:2vh 4vw;border-radius:2vh;font-size:6vw;color:white;display:none;}
+    #feedback{top:10vh;background:rgba(38,166,154,0.95);}
+    #score{top:4vh;background:rgba(38,166,154,0.85);}
+    .btns button {position:absolute;left:50%;transform:translateX(-50%);display:none;background:#26A69A;color:white;
+                 border:none;border-radius:2vh;padding:2vh 4vw;font-size:5vw;cursor:pointer;}
+    #next{bottom:23vh;} #play{bottom:15vh;} #check{bottom:7vh;} #back{bottom:1vh;} #random{bottom:31vh;}
+    canvas{display:none;position:absolute;inset:0;pointer-events:none;z-index:10;}
+    @media(orientation:landscape){.card{font-size:9vw;}.card.sentence{font-size:5.5vw;}}
   </style>
 </head>
 <body>
-  <div id="landingPage">
-    <button id="studyBtn" onclick="startStudyMode()">Study</button>
-    <button id="dictateBtn" onclick="startDictateMode()">Dictate</button>
+
+  <div id="landing">
+    <h1>10 Dec Dictation</h1>
+    <button onclick="start('study')">Study Mode</button>
+    <button onclick="start('dictate')">Dictate Mode</button>
   </div>
-  <div id="flashcard" class="card"></div>
+
+  <div id="card" class="card"></div>
+  <canvas id="confetti"></canvas>
   <div id="feedback"></div>
   <div id="score"></div>
-  <input id="dictationInput" type="text" placeholder="Type what you hear">
-  <button id="nextBtn" onclick="nextCard()">Next Card</button>
-  <button id="playBtn" onclick="playPronunciation()">Play Pronunciation</button>
-  <button id="checkBtn" onclick="checkAnswer()">Check Answer</button>
-  <button id="backBtn" onclick="returnToLanding()">Back to Menu</button>
-  <audio id="cardSound" src="https://www.soundjay.com/buttons/button-09a.mp3"></audio>
-  <audio id="clapSound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
+  <input id="input" placeholder="Type here..." autocomplete="off">
+  <button id="next" onclick="next()">Next</button>
+  <button id="play" onclick="speak()">Play Sound</button>
+  <button id="check" onclick="check()">Check</button>
+  <button id="back" onclick="home()">Back to Menu</button>
+  <button id="random" onclick="toggleRandom()">Random: OFF</button>
+
+  <audio id="clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
   <script>
-    const words = [
-      "doctor", "writer", "engineer", "lawyer",
-      "chef", "farmer", "firefighter", "nurse",
-      "scientist", "waiter", "pilot",
-      "sleep", "into", "find", "light",
-      "please", "round", "fall", "off",
-      "I want to jump on the bed.",
-      "We shower in the bathroom.",
-      "We eat in the dining room.",
-      "There is a stove in the kitchen.",
-      "There are cushions in the living room.",
-      "There is a cupboard next to the mirror.",
-      "They are sliding on the smooth coffee table.",
-      "There is a teddy bear in front of the TV.",
-      "I want to write on the desk.",
-      "Do you like the round bookshelf or the square bookshelf?"
-    ];
-    let currentIndex = 0;
-    let currentMode = null;
-    let correctAnswers = 0;
-    let totalAttempts = 0;
-    const cardSound = document.getElementById("cardSound");
-    const clapSound = document.getElementById("clapSound");
-    const dictationInput = document.getElementById("dictationInput");
-    const feedback = document.getElementById("feedback");
-    const score = document.getElementById("score");
-    const flashcard = document.getElementById("flashcard");
-    const nextBtn = document.getElementById("nextBtn");
-    const playBtn = document.getElementById("playBtn");
-    const checkBtn = document.getElementById("checkBtn");
-    const backBtn = document.getElementById("backBtn");
-    const landingPage = document.getElementById("landingPage");
+    // CHANGE THIS LIST EVERY WEEK (your son’s 10 Dec dictation)
+    const words = `
+o
+s
+m
+h
+one
+four
+nine
+they
+what
+has
+have
+and
+play
+our
+This is a desk.
+This is a bookshelf.
+This is a computer.
+She has two sharpeners.
+Tom has three rulers and six erasers.
+We have three pens.
+They have five school bags.
+    `.trim().split('\n').map(s=>s.trim()).filter(Boolean);
 
-    function showCard() {
-      flashcard.textContent = words[currentIndex];
-      if (words[currentIndex].includes(".")) {
-        flashcard.classList.add("sentence");
-      } else {
-        flashcard.classList.remove("sentence");
-      }
-      dictationInput.value = "";
-      feedback.style.display = "none";
-      if (currentMode === 'study') {
-        flashcard.style.display = "flex";
-        dictationInput.style.display = "none";
-        checkBtn.style.display = "none";
-        nextBtn.style.display = "block";
-        playBtn.style.display = "block";
-        backBtn.style.display = "block";
-        score.style.display = "none";
-      } else if (currentMode === 'dictate') {
-        flashcard.style.display = "none";
-        dictationInput.style.display = "none";
-        checkBtn.style.display = "block";
-        nextBtn.style.display = "block";
-        playBtn.style.display = "block";
-        backBtn.style.display = "block";
-        score.style.display = "block";
-        score.textContent = `Score: ${correctAnswers}/${totalAttempts}`;
-        playPronunciation(); // Auto-play in Dictate mode
+    let idx=0, mode=null, correct=0, total=0, random=false;
+    const el = {
+      card:document.getElementById('card'),
+      input:document.getElementById('input'),
+      fb:document.getElementById('feedback'),
+      sc:document.getElementById('score'),
+      landing:document.getElementById('landing')
+    };
+
+    function start(m){mode=m;idx=0;correct=total=0;random=false;document.getElementById('random').textContent='Random: OFF';show();}
+    function home(){mode=null;el.landing.style.display='flex';hideAll();el.card.style.display='none';}
+    function hideAll(){['input','feedback','score','next','play','check','back','random',document.getElementById('confetti')].forEach(id=>document.getElementById(id).style.display='none');}
+    function show(){
+      el.landing.style.display='none';
+      const w=words[idx];
+      el.card.textContent=w;
+      el.card.className='card'+(w.includes('.')?' sentence':'');
+      el.input.value=''; el.fb.style.display='none';
+      if(mode==='study'){
+        el.card.style.display='flex';
+        el.input.style.display=el.check.style.display='none';
+        ['next','play','back','random'].forEach(id=>document.getElementById(id).style.display='block');
+        el.sc.style.display='none';
+      }else{
+        el.card.style.display='none';
+        el.input.style.display='block'; el.input.focus();
+        ['next','play','check','back','random','score'].forEach(id=>document.getElementById(id).style.display='block');
+        el.sc.textContent=`Score: ${correct}/${total}`;
+        speak();
       }
     }
-
-    function startStudyMode() {
-      currentMode = 'study';
-      landingPage.style.display = "none";
-      flashcard.style.display = "none";
-      dictationInput.style.display = "none";
-      feedback.style.display = "none";
-      nextBtn.style.display = "none";
-      playBtn.style.display = "none";
-      checkBtn.style.display = "none";
-      backBtn.style.display = "none";
-      score.style.display = "none";
-      correctAnswers = 0;
-      totalAttempts = 0;
-      showCard();
+    function next(){idx=(idx+1)%words.length;show();}
+    function speak(){
+      const u=new SpeechSynthesisUtterance(words[idx]);
+      u.lang='en-GB';
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
     }
-
-    function startDictateMode() {
-      currentMode = 'dictate';
-      landingPage.style.display = "none";
-      flashcard.style.display = "none";
-      dictationInput.style.display = "none";
-      feedback.style.display = "none";
-      nextBtn.style.display = "none";
-      playBtn.style.display = "none";
-      checkBtn.style.display = "none";
-      backBtn.style.display = "none";
-      score.style.display = "none";
-      correctAnswers = 0;
-      totalAttempts = 0;
-      showCard();
-    }
-
-    function returnToLanding() {
-      currentMode = null;
-      currentIndex = 0;
-      correctAnswers = 0;
-      totalAttempts = 0;
-      landingPage.style.display = "flex";
-      flashcard.style.display = "none";
-      dictationInput.style.display = "none";
-      feedback.style.display = "none";
-      nextBtn.style.display = "none";
-      playBtn.style.display = "none";
-      checkBtn.style.display = "none";
-      backBtn.style.display = "none";
-      score.style.display = "none";
-    }
-
-    function nextCard() {
-      currentIndex = (currentIndex + 1) % words.length;
-      showCard();
-      cardSound.currentTime = 0;
-      cardSound.play().catch(error => {
-        console.log("Sound playback failed:", error);
-      });
-    }
-
-    function playPronunciation() {
-      const utterance = new SpeechSynthesisUtterance(words[currentIndex]);
-      utterance.lang = 'en-GB';
-      const voices = speechSynthesis.getVoices();
-      const femaleVoice = voices.find(voice => voice.lang === 'en-GB' && voice.name.toLowerCase().includes('female')) || 
-                         voices.find(voice => voice.lang === 'en-GB') || voices[0];
-      utterance.voice = femaleVoice;
-      speechSynthesis.speak(utterance);
-      if (currentMode === 'dictate') {
-        dictationInput.style.display = "block";
-        dictationInput.focus();
+    function check(){
+      total++;
+      const ans=el.input.value.trim();
+      const correctAns=words[idx];
+      if(ans.toLowerCase()===correctAns.toLowerCase()){
+        correct++;
+        el.fb.textContent='Correct! Excellent!';
+        el.fb.style.background='rgba(76,175,80,0.95)';
+        document.getElementById('clap').play();
+        if(correct===words.length) setTimeout(confetti,600);
+      }else{
+        el.fb.textContent=`Wrong → ${correctAns}`;
+        el.fb.style.background='rgba(211,47,47,0.95)';
       }
+      el.fb.style.display='block';
+      el.card.style.display='flex';
+      el.sc.textContent=`Score: ${correct}/${total}`;
     }
-
-    function checkAnswer() {
-      if (currentMode !== 'dictate') return;
-      const userInput = dictationInput.value.trim().toLowerCase();
-      const correctAnswer = words[currentIndex].toLowerCase();
-      totalAttempts++;
-      flashcard.style.display = "flex";
-      feedback.style.display = "block";
-      if (userInput === correctAnswer) {
-        correctAnswers++;
-        feedback.textContent = "Correct! Well done!";
-        feedback.style.backgroundColor = "rgba(38, 166, 154, 0.8)";
-        clapSound.currentTime = 0;
-        clapSound.play().catch(error => {
-          console.log("Clap sound playback failed:", error);
+    function toggleRandom(){
+      random=!random;
+      document.getElementById('random').textContent=`Random: ${random?'ON':'OFF'}`;
+      if(random) words.sort(()=>Math.random()-0.5);
+      else location.reload(); // simplest way to reset order
+    }
+    function confetti(){
+      const c=document.getElementById('confetti'); c.style.display='block';
+      c.width=innerWidth; c.height=innerHeight;
+      const ctx=c.getContext('2d');
+      const p=[];
+      for(let i=0;i<300;i++) p.push({x:Math.random()*c.width,y:Math.random()*c.height,c:`hsl(${Math.random()*360},100%,50%)`,s:Math.random()*8+4,a:Math.random()*2*Math.PI,v:Math.random()*5+5});
+      let t=0;
+      const anim=setInterval(()=>{
+        ctx.clearRect(0,0,c.width,c.height);
+        p.forEach(o=>{
+          o.y+=o.v; o.x+=Math.sin(t+o.a)*2;
+          if(o.y>c.height) o.y=-20;
+          ctx.fillStyle=o.c; ctx.fillRect(o.x,o.y,o.s,o.s);
         });
-      } else {
-        feedback.textContent = `Incorrect. The correct answer is: "${words[currentIndex]}"`;
-        feedback.style.backgroundColor = "rgba(211, 47, 47, 0.8)";
-      }
-      score.textContent = `Score: ${correctAnswers}/${totalAttempts}`;
+        t+=0.1;
+      },20);
+      setTimeout(()=>{clearInterval(anim);c.style.display='none';},5000);
     }
 
-    // Ensure voices are loaded
-    window.speechSynthesis.onvoiceschanged = function() {};
-
-    // Initialize landing page
-    landingPage.style.display = "flex";
-    flashcard.style.display = "none";
-    dictationInput.style.display = "none";
-    feedback.style.display = "none";
-    nextBtn.style.display = "none";
-    playBtn.style.display = "none";
-    checkBtn.style.display = "none";
-    backBtn.style.display = "none";
-    score.style.display = "none";
+    // start page
+    el.landing.style.display='flex';
   </script>
 </body>
 </html>
